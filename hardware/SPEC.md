@@ -1,10 +1,54 @@
-# Dot Invaders Hardware Specification
+# DOTplatform Hardware Specification
+
+## Current Setup: Breadboard Prototype
+
+**This is what works today.** The games (DOTinvaders, DOTris) run on this setup:
+
+| Component | Description |
+|-----------|-------------|
+| ATtiny85 | DIP-8 microcontroller |
+| MAX7219 module | Pre-assembled 8x8 LED matrix module |
+| 2x Push buttons | Tactile switches to GND (internal pullups) |
+| Breadboard power supply | 5V regulated (USB or wall adapter) |
+| USBtinyISP | AVR programmer for uploading code |
+
+### Breadboard Wiring
+
+```
+ATtiny85 Pinout:
+             ┌──────┐
+    RESET ───┤1    8├─── VCC (+5V)
+      PB3 ───┤2    7├─── PB2 (CS)  ──► MAX7219 CS
+      PB4 ───┤3    6├─── PB1 (CLK) ──► MAX7219 CLK
+      GND ───┤4    5├─── PB0 (DIN) ──► MAX7219 DIN
+             └──────┘
+
+Buttons:
+  PB3 ────[BTN]──── GND  (RIGHT)
+  PB4 ────[BTN]──── GND  (LEFT)
+  Both pressed = FIRE (chord detection)
+
+MAX7219 Module:
+  VCC ──► +5V
+  GND ──► GND
+  DIN ──► ATtiny85 PB0
+  CS  ──► ATtiny85 PB2
+  CLK ──► ATtiny85 PB1
+```
+
+---
+
+# Future Plans: DOTplatform Handheld
+
+Everything below describes the **planned** handheld device, not yet built.
+
+---
 
 ## Overview
 
 Ultra-low-power retro handheld game platform featuring:
 - 8x8 LED matrix display
-- Two-button input (with optional third button)
+- Two-button input (with chord detection for 3rd input)
 - Battery or USB powered
 - In-circuit USB programming
 - 3D printable enclosure

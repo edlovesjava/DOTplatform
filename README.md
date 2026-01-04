@@ -1,22 +1,31 @@
 # DOTplatform
 
-An open-source handheld gaming platform built on ATtiny85 + MAX7219 8x8 LED matrix.
+An open-source gaming platform built on ATtiny85 + MAX7219 8x8 LED matrix.
 
-## Overview
+## Current Hardware (Breadboard Prototype)
 
-DOTplatform is a hackable, ultra-low-cost gaming handheld designed for:
-- **Players**: Swap games via USB with the flasher app
-- **Hackers**: Build custom games with the Arduino framework
-- **Makers**: Build your own hardware from open designs
+The current working setup is a simple breadboard prototype:
 
-## Features
+| Component | Description |
+|-----------|-------------|
+| ATtiny85 | Microcontroller (DIP-8) |
+| MAX7219 module | 8x8 LED matrix with driver (pre-assembled module) |
+| 2x Push buttons | Left and right input (chord = fire) |
+| Breadboard power supply | 5V regulated power |
+| Breadboard + wires | For prototyping |
 
-- **Hardware**: ATtiny85 MCU, MAX7219 LED driver, 8x8 LED matrix
-- **Input**: 2 buttons providing 3 inputs via chord detection
-- **Power**: USB or battery (2xAAA / LiPo)
-- **Programming**: USB in-place via Micronucleus bootloader
-- **Expansion**: Cartridge port for display chaining and smart modules
-- **Cost**: ~$5 BOM target
+**This is what DOTinvaders and DOTris currently run on.**
+
+## Future Plans (Handheld Device)
+
+The full DOTplatform handheld is planned to include:
+- USB in-place programming (Micronucleus bootloader)
+- Battery power with boost converter
+- Expansion cartridge port
+- 3D printed enclosure
+- ~$5 BOM target
+
+See [hardware/SPEC.md](hardware/SPEC.md) for the full future specification.
 
 ## Repository Structure
 
@@ -41,21 +50,36 @@ Official games built on DOTplatform:
 - [DOTinvaders](https://github.com/edlovesjava/dotinvaders) - Space Invaders clone
 - [DOTris](https://github.com/edlovesjava/DOTris) - Tetris clone
 
-## Quick Start
+## Quick Start (Current Breadboard Setup)
 
-### For Players
+### Hardware Required
 
-1. Download the [DOTplatform Flasher](flasher/) app
-2. Connect your DOT device via USB
-3. Select a game and click Install
+- ATtiny85 (DIP-8)
+- MAX7219 8x8 LED matrix module
+- 2x tactile push buttons
+- Breadboard + jumper wires
+- 5V power supply (breadboard power module or USB)
+- USBtinyISP or similar AVR programmer
 
-### For Developers
+### Wiring
+
+| ATtiny85 | Function | Connect To |
+|----------|----------|------------|
+| PB0 (pin 5) | DIN | MAX7219 DIN |
+| PB1 (pin 6) | CLK | MAX7219 CLK |
+| PB2 (pin 7) | CS | MAX7219 CS |
+| PB3 (pin 2) | RIGHT | Button → GND |
+| PB4 (pin 3) | LEFT | Button → GND |
+| VCC (pin 8) | Power | +5V |
+| GND (pin 4) | Ground | GND |
+
+### Programming
 
 1. Install [Arduino IDE](https://www.arduino.cc/en/software)
-2. Add board URL: `https://raw.githubusercontent.com/edlovesjava/DOTplatform/main/package_dotplatform_index.json`
-3. Install "DOTplatform" from Boards Manager
-4. Install "DotPlatform" library from Library Manager
-5. Open an example and upload!
+2. Install ATTinyCore: Add `https://drazzy.com/package_drazzy.com_index.json` to Board URLs
+3. Select: Board "ATtiny85", Clock "8 MHz (internal)"
+4. Connect programmer and burn bootloader (once)
+5. Upload game sketch
 
 ```cpp
 #include <DotPlatform.h>
