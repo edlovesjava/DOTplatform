@@ -40,7 +40,7 @@ MAX7219 Module:
 
 # Future Plans: DOTplatform Handheld
 
-Everything below describes the **planned** handheld device, not yet built.
+Everything below describes the planned handheld device.
 
 ---
 
