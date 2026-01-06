@@ -73,28 +73,16 @@ Small signal diodes for isolating the fire button. The stripe on the diode body 
 
 ---
 
+## My Setup
+
+![Breadboard prototype](images/breadboard-setup.jpeg)
+
+---
+
 ## Step-by-Step Assembly
 
 ### Step 1: Place Components on Breadboard
 
-```
-Breadboard Layout (top view):
-
-     1  5  10  15  20  25  30
-   ┌──────────────────────────────┐
- + │ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │ ← Power rail (+4.5V)
- - │ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  │ ← Ground rail
-   │                              │
- a │     █ █ █ █                  │ ← ATtiny85 pins 1-4
- b │     █ █ █ █                  │
- c │     █ █ █ █                  │
- d │     █ █ █ █                  │
- e │     █ █ █ █                  │ ← ATtiny85 pins 5-8
-   │ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─  │ ← Center gap
- f │                 ○ ○ ○ ○ ○    │ ← MAX7219 module area
- g │                 ○ ○ ○ ○ ○    │
- ...
-```
 
 1. Insert the **ATtiny85** straddling the center gap
    - Pin 1 (with dot/notch) toward the left
