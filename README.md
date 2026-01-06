@@ -4,14 +4,17 @@ An open-source gaming platform built on ATtiny85 + MAX7219 8x8 LED matrix.
 
 ## Current Hardware (Breadboard Prototype)
 
-The current working setup is a simple breadboard prototype:
+The current working setup is a breadboard prototype:
 
 | Component | Description |
 |-----------|-------------|
 | ATtiny85 | Microcontroller (DIP-8) |
 | MAX7219 module | 8x8 LED matrix with driver (pre-assembled module) |
-| 2x Push buttons | Left and right input (chord = fire) |
-| Breadboard power supply | 5V regulated power |
+| 3x Push buttons | Left, right, and fire input |
+| 2x 1N4148 diodes | Isolation for fire button (prevents sneak path) |
+| 100nF capacitor | Decoupling cap for ATtiny85 |
+| 100nF + 10µF capacitors | Decoupling caps for MAX7219 |
+| 3xAAA battery holder | 4.5V power (leads soldered to jumper pins) |
 | Breadboard + wires | For prototyping |
 
 **This is what DOTinvaders and DOTris currently run on.**
@@ -56,9 +59,12 @@ Official games built on DOTplatform:
 
 - ATtiny85 (DIP-8)
 - MAX7219 8x8 LED matrix module
-- 2x tactile push buttons
+- 3x tactile push buttons (left, right, fire)
+- 2x 1N4148 signal diodes
+- 1x 100nF ceramic capacitor (ATtiny85 decoupling)
+- 1x 100nF + 1x 10µF ceramic capacitors (MAX7219 decoupling)
+- 3xAAA battery holder (4.5V nominal)
 - Breadboard + jumper wires
-- 5V power supply (breadboard power module or USB)
 - USBtinyISP or similar AVR programmer
 
 ### Wiring
@@ -68,10 +74,26 @@ Official games built on DOTplatform:
 | PB0 (pin 5) | DIN | MAX7219 DIN |
 | PB1 (pin 6) | CLK | MAX7219 CLK |
 | PB2 (pin 7) | CS | MAX7219 CS |
-| PB3 (pin 2) | RIGHT | Button → GND |
-| PB4 (pin 3) | LEFT | Button → GND |
-| VCC (pin 8) | Power | +5V |
+| PB3 (pin 2) | LEFT | Button → GND |
+| PB4 (pin 3) | RIGHT | Button → GND |
+| VCC (pin 8) | Power | +4.5V from 3xAAA (with 100nF cap to GND) |
 | GND (pin 4) | Ground | GND |
+
+**Button wiring with fire button:**
+
+```
+PB3 ──┬──[LEFT BTN]───┬─── GND
+      │               │
+      └────►|─────────┤  (D1: 1N4148, cathode toward GND)
+                      │
+                 [FIRE BTN]
+                      │
+      ┌────►|─────────┤  (D2: 1N4148, cathode toward GND)
+      │               │
+PB4 ──┴──[RIGHT BTN]──┴─── GND
+```
+
+The diodes prevent "sneak path" current flow - without them, pressing LEFT would also trigger RIGHT through the FIRE button wiring.
 
 ### Programming
 
@@ -92,8 +114,11 @@ void loop() {
   if (Dot.input.pressed(BTN_LEFT)) {
     // Handle left button
   }
-  if (Dot.input.chord()) {
-    // Handle both buttons (fire!)
+  if (Dot.input.pressed(BTN_RIGHT)) {
+    // Handle right button
+  }
+  if (Dot.input.fire()) {
+    // Handle fire (dedicated button or left+right chord)
   }
 
   Dot.display.clear();
