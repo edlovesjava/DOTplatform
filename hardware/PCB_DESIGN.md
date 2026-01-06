@@ -24,21 +24,21 @@
 │                        2.5" (63.5mm)                            │
 │  ┌─────────────────────────────────────┐                        │
 │  │                                     │                        │
-│  │         8x8 LED MATRIX              │   ○ ○ ○ ○ ○   5-pin   │  1.5"
-│  │           (1" x 1")                 │   expansion   header  │ (38.1mm)
+│  │         8x8 LED MATRIX              │   ○ ○ ○ ○ ○   5-pin    │  1.5"
+│  │           (1" x 1")                 │   expansion   header   │ (38.1mm)
 │  │          25.4mm x 25.4mm            │                        │
 │  │                                     │                        │
 │  └─────────────────────────────────────┘                        │
 │                                                                 │
-│  ┌────────────────┐     ┌──────────────────────────┐           │
-│  │   ATtiny85     │     │       MAX7219            │           │
-│  │   DIP-8        │     │       DIP-24             │           │
-│  │   SOCKET       │     │       SOCKET             │           │
-│  └────────────────┘     └──────────────────────────┘           │
+│  ┌────────────────┐     ┌──────────────────────────┐            │
+│  │   ATtiny85     │     │       MAX7219            │            │
+│  │   DIP-8        │     │       DIP-24             │            │
+│  │   SOCKET       │     │       SOCKET             │            │
+│  └────────────────┘     └──────────────────────────┘            │
 │                                                                 │
-│     [LEFT]        [RIGHT]               [FIRE optional]        │
+│     [LEFT]        [RIGHT]               [FIRE optional]         │
 │                                                                 │
-│  [PWR SW]                                      [PROG HEADER]   │
+│  [PWR SW]                                      [PROG HEADER]    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -47,16 +47,16 @@
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                                                                 │
-│     ┌───────────────────────────────────────────────┐          │
-│     │                                               │          │
-│     │           3xAAA BATTERY HOLDER                │          │
-│     │              1" x 2" (25.4mm x 50.8mm)        │          │
-│     │                                               │          │
-│     │      [AAA]     [AAA]     [AAA]                │          │
-│     │                                               │          │
-│     └───────────────────────────────────────────────┘          │
+│     ┌───────────────────────────────────────────────┐           │
+│     │                                               │           │
+│     │           3xAAA BATTERY HOLDER                │           │
+│     │              1" x 2" (25.4mm x 50.8mm)        │           │
+│     │                                               │           │
+│     │      [AAA]     [AAA]     [AAA]                │           │
+│     │                                               │           │
+│     └───────────────────────────────────────────────┘           │
 │                                                                 │
-│     ○ ○ ○   SMD passives (decoupling caps, resistors)          │
+│     ○ ○ ○   SMD passives (decoupling caps, resistors)           │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -75,6 +75,7 @@
 | 1 | DIP-24 Socket | 24-pin | Machined pin | For MAX7219 |
 | 1 | 8x8 LED Matrix | 20mm | Common cathode | 1088AS or similar |
 | 2-3 | Tactile Switch | 6x6mm THT | Momentary | LEFT, RIGHT, FIRE (optional) |
+| 2 | Signal Diode | DO-35 | 1N4148 | Isolation for FIRE button |
 | 1 | Slide Switch | SPDT | - | Power on/off |
 | 1 | 5-pin Header | 2.54mm | Male | Expansion port |
 | 1 | 6-pin Header | 2.54mm | Male | ISP programming |
@@ -149,23 +150,30 @@ Two required buttons plus one optional dedicated FIRE button, all using only 2 G
 | PB4 | RIGHT (required) | Move right |
 | PB3 + PB4 | FIRE (optional) | Fire (pulls both pins low) |
 
-**Chord detection:** Pressing LEFT + RIGHT together triggers FIRE action. The optional third FIRE button provides a dedicated key that electrically does the same thing (shorts both pins to GND).
+**Chord detection:** Pressing LEFT + RIGHT together triggers FIRE action. The optional third FIRE button provides a dedicated key that electrically does the same thing (pulls both pins to GND).
 
 ```
                     (internal pullups enabled)
                               │
-        ┌─────────────────────┴─────────────────────┐
-        │                                           │
-       PB3                                         PB4
-        │                                           │
-        ├────[BTN LEFT]────┐                       ├────[BTN RIGHT]───┐
+        ┌─────────────────────┴────────────────────┐
+        │                                          │
+       PB3                                        PB4
+        │                                          │
+        ├────[BTN LEFT]────┬───────────────────────┼────[BTN RIGHT]───┐
         │                  │                       │                  │
-        └────[BTN FIRE]────┼───────────────────────┘   (optional)     │
-             (optional)    │                                          │
+        │        D1        │              D2       │                  │
+        └────────►|────────┼────────────►|─────────┘                  │
+                           │                                          │
+                      [BTN FIRE]                                      │
+                       (optional)                                     │
+                           │                                          │
                           GND ────────────────────────────────────────┘
+
+D1, D2 = 1N4148 small signal diodes
+►| = diode symbol (anode left, cathode right toward GND)
 ```
 
-**FIRE button wiring (optional):** Two traces from the button - one to PB3, one to PB4. When pressed, both pins go LOW, identical to pressing LEFT + RIGHT simultaneously.
+**FIRE button wiring (optional):** Isolation diodes (1N4148) prevent "sneak path" current flow between PB3 and PB4. Without diodes, pressing LEFT would pull RIGHT low through the FIRE button's wiring. The diode cathodes connect together at the FIRE button, which then connects to GND.
 
 **No external resistors needed** - ATtiny85 internal pullups (~20-50kΩ)
 
@@ -219,19 +227,19 @@ Two required buttons plus one optional dedicated FIRE button, all using only 2 G
 └────────┘                  └──────────┘                   └────────┘
                                 │  │
                                CS  CLK
-                                │   │
-        ┌────────┐              │   │
-        │        │1      8      │   │
-        │  PB5/RST├──VCC───────┼───┼────VCC
-        │        │              │   │
-        │    PB3 ├──[BUTTONS]──│───┼───┐  (4-button ladder)
-        │        │              │   │   │
-        │    PB4 ├──(optional)─│───┼───│─  (2nd button group)
-        │        │              │   │   │
-        │    GND ├─────GND────┼───┼───┴── GND
-        │        │              │   │
-        │    PB0 ├──────DIN────┘   │
-        │        │                  │
+                                │  │
+        ┌────────┐              │  │
+        │        │1      8      │  │
+        │ PB5/RST├──VCC────────────┼────VCC
+        │        │              │  │
+        │    PB3 ├──[BUTTONS]───│──┼───┐  (4-button ladder)
+        │        │              │  │   │
+        │    PB4 ├──(optional)──│──┼───│─  (2nd button group)
+        │        │              │  │   │
+        │    GND ├─────GND──────┼──┼───┴── GND
+        │        │              │  │
+        │    PB0 ├──────DIN─────┘  │
+        │        │                 │
         │    PB1 ├──────CLK────────┘
         │        │
         │    PB2 ├──────CS (directly to MAX7219 pin 12)
